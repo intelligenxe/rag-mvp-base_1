@@ -20,8 +20,6 @@ Follow these principles in every file you create or modify:
 
 4. **Start simple, design for extension.** Implement the simplest working version first. But always define the interface broadly enough that future enhancements (hybrid search, reranking, multi-turn chat, scheduled ingestion) can be added as new files without modifying existing ones. Open/Closed Principle.
 
-5. **Every module gets tests.** For every `src/company_rag/foo/bar.py`, there must be a corresponding `tests/test_foo/test_bar.py`. Use pytest. Mock external dependencies (APIs, file system, models) in tests.
-
 ---
 
 ## Technology Stack — Mandatory Choices
@@ -92,37 +90,6 @@ Do NOT substitute these without explicit instruction. These were selected for re
 - Response format includes inline citations: `[Source: 10-K, 2024-02-15, Risk Factors]`
 - Initial version: single-shot Q&A (stateless). No chat history yet.
 
-### Evaluation
-- **RAGAS** (Apache 2.0) — `pip install ragas`
-- Metrics: Faithfulness, Answer Relevancy, Context Precision, Context Recall
-- Benchmark dataset: JSON file of 50–100 curated Q&A pairs in `src/company_rag/evaluation/benchmark_data/`
-- Evaluation runner should be callable as: `python -m company_rag.evaluation.ragas_eval`
-
-### API Layer
-- **FastAPI** (MIT) — REST API with automatic OpenAPI docs
-  - Endpoints:
-    - `POST /query` — Question in, grounded answer with citations out
-    - `POST /ingest` — Trigger ingestion for a ticker
-    - `GET /health` — Health check
-    - `GET /collections` — List available knowledge bases
-    - `GET /stats` — Collection statistics
-  - Request/response models defined with Pydantic in `schemas.py`
-  - Run with: `uvicorn company_rag.api.main:app`
-
-### CLI
-- **Typer** (MIT) — Developer CLI
-  - `company-rag ingest --ticker AAPL --filing-types 10-K,10-Q,8-K --years-back 3`
-  - `company-rag query "What was Apple's revenue in fiscal year 2024?"`
-  - `company-rag evaluate`
-  - `company-rag serve` (starts FastAPI server)
-  - Entry point defined in `pyproject.toml` under `[project.scripts]`
-
-### Demo UI
-- **Streamlit** (Apache 2.0)
-  - Simple chat interface that calls the FastAPI backend
-  - Sidebar for selecting company/collection and filtering by source type
-  - Run with: `streamlit run src/company_rag/ui/streamlit_app.py`
-
 ### Configuration
 - **`config/default.yaml`** — All defaults (committed to repo)
 - **`.env`** — Secrets only: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `HF_TOKEN` (gitignored)
@@ -131,7 +98,7 @@ Do NOT substitute these without explicit instruction. These were selected for re
 
 ### Data Freshness & Deduplication
 - SQLite metadata table (`data/ingestion_log.db`) tracks ingested documents by accession number (SEC) or URL hash (web)
-- `company-rag ingest --since 2024-06-01` supports incremental ingestion
+- Supports incremental ingestion by date
 - No automatic deletion or re-embedding unless explicitly requested
 
 ---
@@ -194,71 +161,10 @@ company-rag/
 │       │   ├── orchestrator.py              # RAGPipeline — end-to-end: ingest → chunk → embed → store; query → retrieve → generate
 │       │   └── dedup.py                     # IngestionLog — SQLite-backed deduplication tracker
 │       │
-│       ├── evaluation/
-│       │   ├── __init__.py
-│       │   ├── ragas_eval.py                # RAGASEvaluator — runs RAGAS metrics against benchmark dataset
-│       │   ├── metrics.py                   # Custom metrics if needed (placeholder)
-│       │   └── benchmark_data/
-│       │       └── benchmark_questions.json  # Curated Q&A pairs (initially 10–20 seed questions)
-│       │
-│       ├── api/
-│       │   ├── __init__.py
-│       │   ├── main.py                      # FastAPI app factory, CORS, lifespan events
-│       │   ├── routes.py                    # POST /query, POST /ingest, GET /health, GET /collections, GET /stats
-│       │   └── schemas.py                   # Pydantic models: QueryRequest, QueryResponse, IngestRequest, etc.
-│       │
-│       ├── cli/
-│       │   ├── __init__.py
-│       │   └── main.py                      # Typer app: ingest, query, evaluate, serve commands
-│       │
-│       ├── ui/
-│       │   └── streamlit_app.py             # Streamlit chat UI calling FastAPI backend
-│       │
 │       └── config/
 │           ├── __init__.py
 │           ├── settings.py                  # Pydantic Settings class, loads YAML + .env
 │           └── default.yaml                 # All default configuration values
-│
-├── tests/
-│   ├── conftest.py                          # Shared fixtures: mock_settings, temp_chroma_db, sample_documents
-│   ├── test_ingestion/
-│   │   ├── __init__.py
-│   │   ├── test_sec_filings.py
-│   │   ├── test_earnings_releases.py
-│   │   ├── test_news_releases.py
-│   │   └── test_website.py
-│   ├── test_preprocessing/
-│   │   ├── __init__.py
-│   │   ├── test_chunking.py
-│   │   ├── test_metadata.py
-│   │   └── test_cleaning.py
-│   ├── test_embeddings/
-│   │   ├── __init__.py
-│   │   └── test_bge_embedding.py
-│   ├── test_vectorstore/
-│   │   ├── __init__.py
-│   │   └── test_chroma_store.py
-│   ├── test_llm/
-│   │   ├── __init__.py
-│   │   ├── test_openai_llm.py
-│   │   └── test_ollama_llm.py
-│   ├── test_retrieval/
-│   │   ├── __init__.py
-│   │   └── test_vector_retriever.py
-│   ├── test_generation/
-│   │   ├── __init__.py
-│   │   ├── test_prompt_templates.py
-│   │   └── test_response_builder.py
-│   ├── test_pipeline/
-│   │   ├── __init__.py
-│   │   ├── test_orchestrator.py
-│   │   └── test_dedup.py
-│   ├── test_evaluation/
-│   │   ├── __init__.py
-│   │   └── test_ragas_eval.py
-│   └── test_api/
-│       ├── __init__.py
-│       └── test_routes.py
 │
 ├── config/
 │   ├── default.yaml                         # Copy of src/company_rag/config/default.yaml (convenience)
@@ -270,14 +176,7 @@ company-rag/
 │   ├── chroma_db/                           # ChromaDB persistence
 │   └── ingestion_log.db                     # SQLite dedup tracker
 │
-├── .github/
-│   └── workflows/
-│       └── ci.yml                           # GitHub Actions: lint, test, eval
-│
 ├── pyproject.toml
-├── Dockerfile
-├── Dockerfile.streamlit
-├── docker-compose.yml
 ├── .gitignore
 ├── .env.example
 ├── README.md
@@ -369,9 +268,6 @@ dependencies = [
     "requests>=2.31",
     "beautifulsoup4>=4.12",
     "lxml>=4.9",
-    "fastapi>=0.100",
-    "uvicorn[standard]>=0.23",
-    "typer[all]>=0.9",
     "pydantic>=2.0",
     "pydantic-settings>=2.0",
     "pyyaml>=6.0",
@@ -379,19 +275,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-eval = ["ragas>=0.1"]
-ui = ["streamlit>=1.28"]
 dev = [
-    "pytest>=7.4",
-    "pytest-cov>=4.1",
-    "pytest-asyncio>=0.21",
     "ruff>=0.1",
-    "httpx>=0.24",            # For FastAPI test client
 ]
-all = ["company-rag[eval,ui,dev]"]
-
-[project.scripts]
-company-rag = "company_rag.cli.main:app"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -399,14 +285,10 @@ where = ["src"]
 [tool.ruff]
 target-version = "py311"
 line-length = 100
-src = ["src", "tests"]
+src = ["src"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "UP", "B", "SIM", "RUF"]
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-addopts = "--cov=company_rag --cov-report=term-missing"
 ```
 
 ---
@@ -460,20 +342,6 @@ retrieval:
 generation:
   include_citations: true
   citation_format: "[Source: {source_type}, {filing_date}, {section}]"
-
-evaluation:
-  benchmark_path: "src/company_rag/evaluation/benchmark_data/benchmark_questions.json"
-  metrics:
-    - "faithfulness"
-    - "answer_relevancy"
-    - "context_precision"
-    - "context_recall"
-
-api:
-  host: "0.0.0.0"
-  port: 8000
-  cors_origins:
-    - "http://localhost:8501"      # Streamlit default
 
 dedup:
   db_path: "./data/ingestion_log.db"
@@ -582,149 +450,6 @@ class RAGPipeline:
         return response
 ```
 
-### FastAPI Routes (routes.py)
-```python
-from fastapi import APIRouter, Depends
-from company_rag.pipeline.orchestrator import RAGPipeline
-from company_rag.api.schemas import QueryRequest, QueryResponse
-
-router = APIRouter()
-
-@router.post("/query", response_model=QueryResponse)
-async def query(request: QueryRequest, pipeline: RAGPipeline = Depends(get_pipeline)):
-    return pipeline.query(request.question, filters=request.filters)
-```
-
-### Benchmark Questions Format
-`benchmark_questions.json`:
-```json
-[
-    {
-        "question": "What was Apple's total net revenue for fiscal year 2024?",
-        "ground_truth": "Apple's total net revenue for fiscal year 2024 was $391.0 billion.",
-        "source_type": "10-K",
-        "difficulty": "factual"
-    },
-    {
-        "question": "What are the main risk factors Apple identifies in its most recent annual report?",
-        "ground_truth": "Apple identifies risks including...",
-        "source_type": "10-K",
-        "difficulty": "qualitative"
-    }
-]
-```
-
----
-
-## GitHub Actions CI
-
-`.github/workflows/ci.yml`:
-```yaml
-name: CI
-on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main, develop]
-
-jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-      - run: pip install ruff
-      - run: ruff check src/ tests/
-      - run: ruff format --check src/ tests/
-
-  test:
-    runs-on: ubuntu-latest
-    needs: lint
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-      - run: pip install -e ".[dev]"
-      - run: pytest tests/ --cov=company_rag --cov-report=xml --cov-fail-under=80
-      - uses: codecov/codecov-action@v4
-
-  eval:
-    runs-on: ubuntu-latest
-    needs: test
-    if: contains(github.event.pull_request.labels.*.name, 'pipeline-change')
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-      - run: pip install -e ".[eval]"
-      - run: python -m company_rag.evaluation.ragas_eval
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-```
-
----
-
-## Docker
-
-### Dockerfile
-```dockerfile
-FROM python:3.11-slim AS base
-WORKDIR /app
-RUN apt-get update && apt-get install -y --no-install-recommends gcc && rm -rf /var/lib/apt/lists/*
-COPY pyproject.toml README.md ./
-COPY src/ src/
-RUN pip install --no-cache-dir .
-EXPOSE 8000
-CMD ["uvicorn", "company_rag.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
-```
-
-### Dockerfile.streamlit
-```dockerfile
-FROM python:3.11-slim
-WORKDIR /app
-COPY pyproject.toml README.md ./
-COPY src/ src/
-RUN pip install --no-cache-dir ".[ui]"
-EXPOSE 8501
-CMD ["streamlit", "run", "src/company_rag/ui/streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0"]
-```
-
-### docker-compose.yml
-```yaml
-version: "3.8"
-services:
-  api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./data:/app/data
-      - ./config:/app/config
-    env_file: .env
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      retries: 3
-
-  ui:
-    build:
-      context: .
-      dockerfile: Dockerfile.streamlit
-    ports:
-      - "8501:8501"
-    environment:
-      - API_BASE_URL=http://api:8000
-    depends_on:
-      api:
-        condition: service_healthy
-```
-
 ---
 
 ## .gitignore Essentials
@@ -752,11 +477,6 @@ dist/
 build/
 *.egg-info/
 
-# Test
-.coverage
-htmlcov/
-.pytest_cache/
-
 # OS
 .DS_Store
 Thumbs.db
@@ -780,10 +500,6 @@ When asked to generate the project, create files in this order:
    - `retrieval/` (depends on vectorstore)
    - `generation/` (depends on llm)
    - `pipeline/` (depends on all above — this is the orchestrator)
-5. **Interface layer:** `api/`, `cli/`, `ui/`
-6. **Evaluation:** `evaluation/`
-7. **Tests:** Mirror the implementation order
-8. **Infrastructure:** `Dockerfile`, `Dockerfile.streamlit`, `docker-compose.yml`, `.github/workflows/ci.yml`
 
 ---
 
@@ -798,4 +514,3 @@ When asked to generate the project, create files in this order:
 - **Do NOT use `print()`** — Use `logging.getLogger(__name__)`.
 - **Do NOT use `os.path`** — Use `pathlib.Path`.
 - **Do NOT install packages not listed in pyproject.toml** — If you need something, add it to the dependency list.
-- **Do NOT create a `requirements.txt`** — Dependencies are managed solely in `pyproject.toml`.
