@@ -1,0 +1,48 @@
+company:
+  ticker: "AAPL"
+  name: "Apple Inc."
+
+ingestion:
+  sec_edgar_user_agent: "CompanyRAG research@example.com"
+  filing_types:
+    - "10-K"
+    - "10-Q"
+    - "8-K"
+  years_back: 3
+  download_dir: "./data/raw"
+  website_urls: []
+
+chunking:
+  strategy: "sentence"
+  chunk_size: 512
+  chunk_overlap: 50
+
+embedding:
+  model_name: "BAAI/bge-base-en-v1.5"
+  device: "cpu"
+  normalize: true
+  batch_size: 32
+
+vectorstore:
+  provider: "chroma"
+  persist_directory: "./data/chroma_db"
+  collection_name: "company_kb"
+  distance_metric: "cosine"
+
+llm:
+  provider: "openai"
+  model: "gpt-4o-mini"
+  temperature: 0.1
+  max_tokens: 1024
+  ollama_base_url: "http://localhost:11434/v1"
+
+retrieval:
+  strategy: "vector"
+  top_k: 5
+
+generation:
+  include_citations: true
+  citation_format: "[Source: {source_type}, {filing_date}, {section}]"
+
+dedup:
+  db_path: "./data/ingestion_log.db"

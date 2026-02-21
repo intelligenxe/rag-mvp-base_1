@@ -1,0 +1,28 @@
+# Environment
+.env
+*.pyc
+__pycache__/
+.venv/
+venv/
+
+# Data
+data/chroma_db/
+data/raw/
+data/ingestion_log.db
+!data/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+
+# Build
+dist/
+build/
+*.egg-info/
+
+# Linting
+.ruff_cache/
+
+# OS
+.DS_Store
+Thumbs.db
