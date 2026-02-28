@@ -71,12 +71,13 @@ The main code structure needs to be a python Package since it is clearly better 
 5. Versioning & blame: Git history clearly shows who changed what
 6. Documentation: Each file can have its own detailed README
 
-[See complete package structure below (includes additional/future modules)]() 
+[See complete package structure below (includes additional/future modules)](https://github.com/intelligenxe/rag-mvp-base_1/tree/main#complete-package-structure) 
 
 # APPENDIX B: The reason for the abstract base classes
 
 
-
+![Abstract base classes structure](abstract_base_classes.png)
+[Abstract base classes explanation](https://claude.ai/share/1145f1e0-cc21-44db-9c77-3c596af5402f)
 
 # APPENDIX C: Recommended components and enhancements
 
