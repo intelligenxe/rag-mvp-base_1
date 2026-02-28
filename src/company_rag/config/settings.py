@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     # Secrets (from .env)
     openai_api_key: str = ""
     anthropic_api_key: str = ""
+    groq_api_key: str = ""
     hf_token: str = ""
 
     # Ingestion
@@ -58,6 +59,7 @@ class Settings(BaseSettings):
     llm_temperature: float = 0.1
     llm_max_tokens: int = 1024
     llm_ollama_base_url: str = "http://localhost:11434/v1"
+    llm_groq_model: str = "llama-3.3-70b-versatile"
 
     # Retrieval
     retrieval_strategy: str = "vector"

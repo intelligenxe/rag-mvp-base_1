@@ -9,6 +9,7 @@ class BaseLLM(ABC):
     Implementations:
         - OpenAILLM (openai_llm.py): OpenAI API (gpt-4o-mini default)
         - OllamaLLM (ollama_llm.py): Ollama's OpenAI-compatible endpoint
+        - GroqLLM (groq_llm.py): Groq API with Llama models
 
     To add a new implementation:
         1. Create a new file in this directory

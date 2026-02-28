@@ -514,3 +514,5 @@ When asked to generate the project, create files in this order:
 - **Do NOT use `print()`** — Use `logging.getLogger(__name__)`.
 - **Do NOT use `os.path`** — Use `pathlib.Path`.
 - **Do NOT install packages not listed in pyproject.toml** — If you need something, add it to the dependency list.
+- **Do NOT use the content of `README.md`** in the project root for planning or execution — it may be outdated or inaccurate. Use only `CLAUDE.md` as the source of truth.
+- **Do NOT install packages globally** — Always use the project virtual environment at `.venv/`. Use `.venv/bin/pip`, `.venv/bin/python`, `.venv/bin/ruff`, etc.

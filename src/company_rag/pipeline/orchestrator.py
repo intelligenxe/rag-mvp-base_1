@@ -12,6 +12,7 @@ from company_rag.ingestion.earnings_releases import EarningsReleaseIngestor
 from company_rag.ingestion.news_releases import NewsReleaseIngestor
 from company_rag.ingestion.sec_filings import SECFilingIngestor
 from company_rag.ingestion.website import WebsiteIngestor
+from company_rag.llm.groq_llm import GroqLLM
 from company_rag.llm.ollama_llm import OllamaLLM
 from company_rag.llm.openai_llm import OpenAILLM
 from company_rag.pipeline.base import BasePipeline
@@ -146,7 +147,7 @@ class RAGPipeline(BasePipeline):
             WebsiteIngestor(),
         ]
 
-    def _build_llm(self) -> OpenAILLM | OllamaLLM:
+    def _build_llm(self) -> OpenAILLM | OllamaLLM | GroqLLM:
         """Build the LLM provider based on settings.
 
         Returns:
@@ -154,6 +155,8 @@ class RAGPipeline(BasePipeline):
         """
         if self._settings.llm_provider == "ollama":
             return OllamaLLM()
+        if self._settings.llm_provider == "groq":
+            return GroqLLM()
         return OpenAILLM()
 
     def _get_document_id(self, doc: object) -> str:
