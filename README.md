@@ -75,8 +75,7 @@ The main code structure needs to be a python Package since it is clearly better 
 
 # APPENDIX B: The reason for the abstract base classes
 
-
-![Abstract base classes structure](abstract_base_classes.png)
+![alt text](<Screenshot from 2026-02-28 18-57-50.png>)
 
 [Abstract base classes explanation](https://claude.ai/share/1145f1e0-cc21-44db-9c77-3c596af5402f)
 
@@ -819,4 +818,11 @@ This is an example of the workflow for adding a feature (e.g. ingesting PDFs) th
 ![alt text](<Screenshot from 2026-02-28 18-58-38.png>)
 
 
-In other cases, however, this workflow may be unnecessary, as the desired feature can often be added by editing existing files (including configuration files).  
+In other cases, however, this workflow may be unnecessary, as the desired feature can often be added by editing existing files (including configuration files). 
+
+# APPENDIX E: Configuring for the case of injesting PDFs only
+How to run this RAG app for the case where only PDF documents are ingested and thus  website.py, sec_filings.py news_releases.py earnings_releases.py are temporarily inactivated.
+
+![alt text](<Screenshot from 2026-02-28 20-09-13.png>)
+
+![alt text](<Screenshot from 2026-02-28 20-45-12.png>)
