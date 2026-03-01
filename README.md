@@ -810,4 +810,13 @@ company-rag/
 | **Testing** | pytest + pytest-cov | MIT | Python testing standard |
 | **License** | Apache 2.0 | — | Standard for ML/data open-source projects |
 
+# APPENDIX D: Adding feature to ingest PDFs
+This is an example of the workflow for adding a feature (e.g. ingesting PDFs) that did not exist in the current version of the app (e.g.  v.0.1-alpha).
 
+![alt text](<Screenshot from 2026-02-28 18-57-51.png>)
+
+
+![alt text](<Screenshot from 2026-02-28 18-58-38.png>)
+
+
+In other cases, however, this workflow may be unnecessary, as the desired feature can often be added by editing existing files (including configuration files).  
