@@ -10,6 +10,7 @@ from company_rag.generation.response_builder import ResponseBuilder
 from company_rag.ingestion.base import BaseIngestor
 from company_rag.ingestion.earnings_releases import EarningsReleaseIngestor
 from company_rag.ingestion.news_releases import NewsReleaseIngestor
+from company_rag.ingestion.pdf_files import PDFFileIngestor
 from company_rag.ingestion.sec_filings import SECFilingIngestor
 from company_rag.ingestion.website import WebsiteIngestor
 from company_rag.llm.groq_llm import GroqLLM
@@ -145,6 +146,7 @@ class RAGPipeline(BasePipeline):
             EarningsReleaseIngestor(),
             NewsReleaseIngestor(),
             WebsiteIngestor(),
+            PDFFileIngestor(),
         ]
 
     def _build_llm(self) -> OpenAILLM | OllamaLLM | GroqLLM:

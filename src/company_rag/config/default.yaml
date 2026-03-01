@@ -11,6 +11,7 @@ ingestion:
   years_back: 3
   download_dir: "./data/raw"
   website_urls: []
+  pdf_paths: []  # List of local PDF file paths to ingest
 
 chunking:
   strategy: "sentence"

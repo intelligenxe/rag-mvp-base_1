@@ -13,6 +13,7 @@ class BaseIngestor(ABC):
         - EarningsReleaseIngestor (earnings_releases.py): 8-K Exhibit 99 extraction
         - NewsReleaseIngestor (news_releases.py): Company newsroom scraper
         - WebsiteIngestor (website.py): Curated company page scraper
+        - PDFFileIngestor (pdf_files.py): Local PDF file reader
 
     To add a new implementation:
         1. Create a new file in this directory
