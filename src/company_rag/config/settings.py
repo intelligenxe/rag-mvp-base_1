@@ -36,6 +36,9 @@ class Settings(BaseSettings):
     ingestion_download_dir: str = "./data/raw"
     ingestion_website_urls: list[str] = Field(default=[])
     ingestion_pdf_paths: list[str] = Field(default=[])
+    ingestion_enabled_sources: list[str] = Field(
+        default=["sec_filings", "earnings_releases", "news_releases", "website", "pdf"]
+    )
 
     # Chunking
     chunking_strategy: str = "sentence"

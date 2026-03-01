@@ -26,6 +26,14 @@ from company_rag.vectorstore.chroma_store import ChromaVectorStore
 
 logger = logging.getLogger(__name__)
 
+_INGESTOR_REGISTRY: dict[str, type[BaseIngestor]] = {
+    "sec_filings": SECFilingIngestor,
+    "earnings_releases": EarningsReleaseIngestor,
+    "news_releases": NewsReleaseIngestor,
+    "website": WebsiteIngestor,
+    "pdf": PDFFileIngestor,
+}
+
 
 class RAGPipeline(BasePipeline):
     """End-to-end pipeline: ingest -> chunk -> embed -> store; query -> retrieve -> generate."""
@@ -136,18 +144,15 @@ class RAGPipeline(BasePipeline):
         return response
 
     def _build_ingestors(self) -> list[BaseIngestor]:
-        """Build the list of document ingestors.
+        """Build the list of document ingestors based on enabled_sources config.
 
         Returns:
             List of configured ingestor instances.
         """
-        return [
-            SECFilingIngestor(),
-            EarningsReleaseIngestor(),
-            NewsReleaseIngestor(),
-            WebsiteIngestor(),
-            PDFFileIngestor(),
-        ]
+        enabled = self._settings.ingestion_enabled_sources
+        ingestors = [cls() for name, cls in _INGESTOR_REGISTRY.items() if name in enabled]
+        logger.info("Enabled ingestors: %s", [type(i).__name__ for i in ingestors])
+        return ingestors
 
     def _build_llm(self) -> OpenAILLM | OllamaLLM | GroqLLM:
         """Build the LLM provider based on settings.

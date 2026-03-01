@@ -12,6 +12,12 @@ ingestion:
   download_dir: "./data/raw"
   website_urls: []
   pdf_paths: []  # List of local PDF file paths to ingest
+  enabled_sources:  # Which ingestors to activate
+    - "sec_filings"
+    - "earnings_releases"
+    - "news_releases"
+    - "website"
+    - "pdf"
 
 chunking:
   strategy: "sentence"
