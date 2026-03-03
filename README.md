@@ -826,3 +826,9 @@ How to run this RAG app for the case where only PDF documents are ingested and t
 ![alt text](<repo_images/Screenshot from 2026-02-28 20-09-13.png>)
 
 ![alt text](<repo_images/Screenshot from 2026-02-28 20-45-12.png>)
+
+# APPENDIX F: Running the PDF ingestion only case
+![alt text](<repo_images/Screenshot from 2026-03-02 17-43-52.png>)
+![alt text](<repo_images/Screenshot from 2026-03-02 17-44-34.png>)
+## Running the PDF ingestion only case with the run.py file
+![alt text](<repo_images/Screenshot from 2026-03-02 17-51-51.png>)
